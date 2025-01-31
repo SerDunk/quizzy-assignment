@@ -1,31 +1,31 @@
 import QuizQuestion from "@/components/QuizQuestion";
 import GetQuiz from "../getQuiz";
 import { Key } from "react";
+import SubmitQuizButton from "@/components/SubmitQuizButton";
 
 export default async function QuestionPage() {
   const questions = await GetQuiz();
   const questionArray = questions.questions;
-  console.log(questionArray);
+
   return (
     <div className="flex flex-col gap-4 w-full">
       {questionArray.map(
         (question: {
           id: Key | null | undefined;
           description: string;
-          detailedSolution: string;
-          options: object[];
-        }) => {
-          return (
-            <div key={question.id}>
-              <QuizQuestion
-                description={question.description}
-                detailedSolution={question.detailedSolution}
-                options={question.options}
-              />
-            </div>
-          );
-        }
+          detailed_solution: string;
+          options: { id: string; description: string; is_correct: boolean }[];
+        }) => (
+          <QuizQuestion
+            key={question.id}
+            questionId={question.id as string}
+            description={question.description}
+            detailedSolution={question.detailed_solution}
+            options={question.options}
+          />
+        )
       )}
+      <SubmitQuizButton />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,39 +7,71 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion";
 
 export default function QuizQuestion({
+  questionId,
   description,
   detailedSolution,
   options,
 }: {
+  questionId: string;
   description: string;
   detailedSolution: string;
-  options: object[];
+  options: { id: string; description: string; is_correct: boolean }[];
 }) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [usedFiftyFifty, setUsedFiftyFifty] = useState(false);
+  const [disabledOptions, setDisabledOptions] = useState<string[]>([]);
 
   const handleOptionSelect = (optionId: string) => {
-    if (!isSubmitted) {
+    if (!disabledOptions.includes(optionId)) {
       setSelectedOptionId(optionId);
+      const isCorrect = options.find(
+        (option) => option.id === optionId
+      )?.is_correct;
+      updateScore(isCorrect, usedFiftyFifty);
     }
   };
 
-  const handleSubmit = () => {
-    setIsSubmitted(true);
+  const handleFiftyFifty = () => {
+    if (!usedFiftyFifty) {
+      const incorrectOptions = options.filter((option) => !option.is_correct);
+      const randomIncorrect = incorrectOptions
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 2)
+        .map((option) => option.id);
+      setDisabledOptions(randomIncorrect);
+      setUsedFiftyFifty(true);
+    }
   };
 
-  const selectedOption = options.find(
-    (option) => option.id === selectedOptionId
-  );
-  const isCorrect = selectedOption ? selectedOption.is_correct : false;
+  const updateScore = (
+    isCorrect: boolean | undefined,
+    usedFiftyFifty: boolean
+  ) => {
+    const storedScores = JSON.parse(localStorage.getItem("quizScores") || "{}");
+    const currentScore = storedScores[questionId] || 0;
+
+    let scoreChange = 0;
+    if (isCorrect !== undefined) {
+      scoreChange = isCorrect ? (usedFiftyFifty ? 2 : 4) : -1;
+    }
+
+    // Update score for the current question
+    storedScores[questionId] = currentScore + scoreChange;
+    localStorage.setItem("quizScores", JSON.stringify(storedScores));
+  };
 
   return (
-    <div>
-      <Card className="text-center my-6">
+    <div className="flex flex-col justify-center items-center">
+      <Card className="text-center my-6 w-3/4 sm:text-lg text-[12px]">
         <CardHeader className="flex flex-col justify-center items-center">
           <CardTitle className="sm:w-[700px]">{description}</CardTitle>
         </CardHeader>
@@ -49,34 +81,36 @@ export default function QuizQuestion({
               <button
                 key={option.id}
                 onClick={() => handleOptionSelect(option.id)}
-                disabled={isSubmitted}
-                className={`p-2 my-2 border rounded sm:w-[500px] ${
-                  selectedOptionId === option.id
-                    ? "bg-blue-100 border-blue-500"
+                disabled={disabledOptions.includes(option.id)}
+                className={`p-2 my-2 border rounded w-[150px] sm:w-[500px] ${
+                  disabledOptions.includes(option.id)
+                    ? "bg-red-100 border-red-500 cursor-not-allowed"
+                    : selectedOptionId
+                    ? option.is_correct
+                      ? "bg-green-100 border-green-500"
+                      : selectedOptionId === option.id
+                      ? "bg-red-100 border-red-500"
+                      : "bg-white border-gray-300"
                     : "bg-white border-gray-300"
-                } ${
-                  isSubmitted && option.is_correct
-                    ? "bg-green-100 border-green-500"
-                    : ""
                 }`}
               >
                 {option.description}
               </button>
             ))}
           </CardDescription>
-          {!isSubmitted && selectedOptionId && (
-            <Button onClick={handleSubmit} className="mt-4">
-              Submit
+          {!usedFiftyFifty && (
+            <Button onClick={handleFiftyFifty} className="mt-4">
+              50/50
             </Button>
           )}
-          {isSubmitted && (
-            <div className="mt-4">
-              {isCorrect ? (
-                <p className="text-green-600">Correct! 🎉</p>
-              ) : (
-                <p className="text-red-600">Incorrect! 😢</p>
-              )}
-              <p className="text-sm text-gray-600">{detailedSolution}</p>
+          {selectedOptionId && (
+            <div className="mt-4 flex flex-col justify-center items-center">
+              <Accordion type="single" collapsible>
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>Detailed Solution</AccordionTrigger>
+                  <AccordionContent>{detailedSolution}</AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           )}
         </CardContent>

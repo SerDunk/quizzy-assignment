@@ -45,24 +45,14 @@ This is an interactive quiz application that incorporates gamification elements 
 
 ### UI Screenshots
 
-(Include images of the UI showcasing different features like the quiz, 50/50 option, and score tracking.)
+![alt text](<Screenshot 2025-02-01 222105.png>) ![alt text](<Screenshot 2025-02-01 222122.png>) ![alt text](<Screenshot 2025-02-01 222138.png>)
 
 ### Video Walkthrough
 
-(Include a short demo video link showcasing the app in action.)
+Here is a short video walkthrough : https://www.loom.com/share/5ee216854f6347868c871164481aea67?sid=a63091f6-e92b-47cf-b307-57caea84cfa5
 
 ## Submission
 
 Submit the GitHub repository link along with a direct link to this README file.
 
 ---
-
-### Future Enhancements
-
-- Add a timer for each question.
-- Introduce leaderboards and achievements.
-- Implement more lifelines beyond 50/50.
-
----
-
-Feel free to contribute or raise issues to improve this project!

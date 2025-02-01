@@ -37,7 +37,16 @@ export default function QuizTitleCard({
           </p>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 text-sm">
+          <div className="text-green-400 w-[250px]">
+            +4 point per correct answer
+          </div>
+          <div className="text-red-400 w-[250px]">
+            -1 point per incorrect answer
+          </div>
+          <div>50/50 only gives +2 points</div>
+        </div>
         <Link href="/quiz/1">
           <Button>Start Quiz</Button>
         </Link>

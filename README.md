@@ -53,6 +53,6 @@ Here is a short video walkthrough : https://www.loom.com/share/5ee216854f6347868
 
 ## Submission
 
-Submit the GitHub repository link along with a direct link to this README file.
+Hosted Link : https://quizzy-assignment-six.vercel.app/
 
 ---
